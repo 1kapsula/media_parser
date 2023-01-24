@@ -1,17 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-#include<QUrl>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include<QMessageBox>
-#include<QFile>
-
-#include<windows.h>
-#include<QLineEdit>
-#include<fstream>
-
-
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -34,6 +23,8 @@ MainWindow::MainWindow(QWidget* parent)
         if (ptr != std::string::npos) {
             filename.erase(ptr, substring.length());
         }
+        chooseParser = new QComboBox(this);
+        chooseParser->addItem(QString::fromStdString(filename));
     }
 #else
 
@@ -72,11 +63,13 @@ MainWindow::MainWindow(QWidget* parent)
     connect(sForm, &Form::firstForm, this, &MainWindow::show);
     manager = new QNetworkAccessManager();
 
-    connect(this, SIGNAL(sendTitle(json)), sForm, SLOT(getTitle(json)));
+    connect(this, SIGNAL(sendTitle(json)), 
+        sForm, SLOT(getTitle(json)));
 
-    connect(this, SIGNAL(sendPost(std::string, std::string, std::string, int)), sForm, SLOT(createGaleleryPost(std::string, std::string, std::string, int)));
+    connect(this, SIGNAL(sendPost(std::string, std::string, std::string)), 
+        sForm, SLOT(createGaleleryPost(std::string, std::string, std::string)));
 
-    QObject::connect(manager, SIGNAL(finished(QNetworkReply*)),
+    connect(manager, SIGNAL(finished(QNetworkReply*)),
         this, SLOT(ReplyFinished(QNetworkReply*)));
 }
 
@@ -131,14 +124,17 @@ void MainWindow::insertDllIntoList(const HINSTANCE& mem, const fs::path& filepat
 }
 
 void MainWindow::ReplyFinished(QNetworkReply* reply) {
-    response = json::parse(reply->readAll());
-    response = response["response"]["items"];
+    full_response = json::parse(reply->readAll());
+    full_response = full_response["response"]["items"];
 }
 
 void MainWindow::on_DownloadButton_clicked()
 {
     for (auto iterator = dynLibsList.begin(); iterator != dynLibsList.end(); iterator++) {
-        if ((((*iterator).second.filename().string().find(ui->line_social_net->text().toStdString()) != std::string::npos))) {
+
+        /*std::string chooseParserString =*/ chooseParser->currentData().toString().toStdString();
+
+        if ((((*iterator).second.filename().string().find(chooseParser->currentData().toString().toStdString()/*ui->line_social_net->text().toStdString()*/) != std::string::npos))) {
             if (!ui->line_social_net->text().toStdString().empty()) {
                 if (!ui->line_login->text().toStdString().empty()) {
                     std::ifstream login_file("login.txt");
@@ -168,25 +164,25 @@ void MainWindow::on_DownloadButton_clicked()
                         get_inv_url get_investment_url;
                         get_investment_url = (get_inv_url)*GetProcAddress((*iterator).first, "get_investment_url");
 
-                        for (int i = 0; i < response.size(); i++) {
-                            get_investment_url(response[i], ans_response, "");
+                        for (int i = 0; i < full_response.size(); i++) {
+                            get_investment_url(full_response[i], cut_response, "");
                         }
 
-                        emit sendTitle(ans_response);
+                        emit sendTitle(cut_response);
 
                         typedef std::vector<std::string>(*post_inf) (json&);
                         post_inf get_post;
                         get_post = (post_inf)*GetProcAddress((*iterator).first, "get_inf_post");
 
-                        for (int i = 0; i < response.size(); i++) {
+                        for (int i = 0; i < full_response.size(); i++) {
                             std::vector<std::string> vec;
-                            vec = get_post(response[i]);
+                            vec = get_post(full_response[i]);
                             std::string post_hash = vec[0];
                             std::string post_text = vec[1];
                             std::string repost_text = vec[2];
-                            emit sendPost(post_hash, post_text, repost_text, i);
+                            emit sendPost(post_hash, post_text, repost_text);
                         }
-                        ans_response = {};
+                        cut_response = {};
                         sForm->show();
                         this->close();
                     }
