@@ -151,7 +151,13 @@ void MainWindow::on_DownloadButton_clicked()
                         }
                     }
                 }
-                
+                if (ui->line_count->text().toInt() > 30) {
+                    max_count = 30;
+                }
+                if (ui->line_count->text().toInt()<0) {
+                    max_count = 0;
+                }
+
                 if (!ui->line_login->text().toStdString().empty()) {
                     std::ifstream login_file("buffer/login.txt");
                     std::string login = ui->line_login->text().toStdString();
@@ -164,13 +170,14 @@ void MainWindow::on_DownloadButton_clicked()
                     }
                     login_file.close();
                     if (!correct_token.empty() || ui->line_login->text().toStdString() == "vk-test") {
+
                         if (full_response.empty()) {
                             typedef std::string(*get_url) (std::string, std::string, std::string);
                             get_url create_url;
                             create_url = (get_url)*GetProcAddress((*iterator).first, "create_url");
 
 
-                            std::string url = create_url(ui->line_domen->text().toStdString(), ui->line_count->text().toStdString(), correct_token);
+                            std::string url = create_url(ui->line_domen->text().toStdString(), std::to_string(max_count), correct_token);
                             request.setUrl(QUrl(QString::fromStdString(url)));
 
                             QNetworkReply* reply = manager->get(request);
@@ -179,12 +186,11 @@ void MainWindow::on_DownloadButton_clicked()
                             loop.exec();
                         }
 
-
                         typedef void(*get_inv_url) (const json&, json&, std::string);
                         get_inv_url get_investment_url;
                         get_investment_url = (get_inv_url)*GetProcAddress((*iterator).first, "get_investment_url");
 
-                        for (int i = 0; i < ui->line_count->text().toInt(); i++) {
+                        for (int i = 0; i < max_count; i++) {
                             get_investment_url(full_response[i], cut_response, "");
                         }
 
@@ -194,7 +200,8 @@ void MainWindow::on_DownloadButton_clicked()
                         post_inf get_post;
                         get_post = (post_inf)*GetProcAddress((*iterator).first, "get_inf_post");
 
-                        for (int i = 0; i < ui->line_count->text().toInt(); i++) {
+
+                        for (int i = 0; i < max_count; i++) {
                             std::vector<std::string> vec;
                             vec = get_post(full_response[i]);
                             std::string post_hash = vec[0];
@@ -208,7 +215,7 @@ void MainWindow::on_DownloadButton_clicked()
                         full_response = {};
                     }
                     else {
-                        QMessageBox::information(this, QString::fromLocal8Bit("Eror!"), QString::fromLocal8Bit("Логин не найден!"));
+                        QMessageBox::information(this, QString::fromLocal8Bit("Ошибка!"), QString::fromLocal8Bit("Логин не найден!"));
                     }
                 }
                 else {

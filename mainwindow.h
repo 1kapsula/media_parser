@@ -116,6 +116,7 @@ signals:
     /// <param name="text_repost">Текст репоста</param>
     void sendPost(std::string hash_post, std::string text_post, std::string text_repost);
 private:
+    int max_count;
 #ifdef _WIN32
     /// <summary>
     /// Массив, содержащий в себе информацию об открытых динамических библиотеках. Хранит дескрипторы и пути
