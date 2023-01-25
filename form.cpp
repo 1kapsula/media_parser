@@ -84,7 +84,7 @@ void Form::createGaleleryPost(std::string hash_post, std::string text_post, std:
                 if (p.relative_path().generic_string().find(hash_post) != std::string::npos) {
                     ui->listWidget->setIconSize(QSize(600, 800));
                     QIcon icon(QPixmap(p.relative_path().generic_string().c_str()));
-                    
+
                     QListWidgetItem* item = new QListWidgetItem(icon, "", ui->listWidget, 0);
 
                     ui->listWidget->addItem(item);

@@ -46,12 +46,12 @@ extern "C"void get_investment_url(const json & object, json & hash_url, std::str
 	if (hash == "") {
 		hash = to_string(object["hash"]);
 	}
-	json ob_type = object["attachments"];//json объект для i-го attachments-а
+	json ob_type = object["attachments"];//json РѕР±СЉРµРєС‚ РґР»СЏ i-РіРѕ attachments-Р°
 	for (int j = 0; j < ob_type.size(); j++) {
 		std::string type_inf = ob_type[j]["type"];
 		if (type_inf == "video") {
 			json video_url = ob_type[j][type_inf]["image"];
-			for (int g = 0; g < video_url.size(); g++) {//это если надо будет перебирать все фотки видео
+			for (int g = 0; g < video_url.size(); g++) {//СЌС‚Рѕ РµСЃР»Рё РЅР°РґРѕ Р±СѓРґРµС‚ РїРµСЂРµР±РёСЂР°С‚СЊ РІСЃРµ С„РѕС‚РєРё РІРёРґРµРѕ
 				if (video_url[g]["width"] == 320 || video_url[g]["height"] == 320) {
 					hash_url[hash].push_back(video_url[g]["url"]);
 				}
