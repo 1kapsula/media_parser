@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(otchaenie VERSION 0.1 LANGUAGES CXX)
+project(media_parser VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/install" CACHE PATH "..." FORCE)
+endif()
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -42,32 +46,26 @@ set(PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(otchaenie
+    qt_add_executable(media_parser
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
 else()
-    if(ANDROID)
-        add_library(otchaenie SHARED
+    add_executable(media_parser
             ${PROJECT_SOURCES}
         )
-    else()
-        add_executable(otchaenie
-            ${PROJECT_SOURCES}
-        )
-    endif()
 endif()
 
 
 
-target_link_libraries(otchaenie PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-target_link_libraries(otchaenie PRIVATE Qt${QT_VERSION_MAJOR}::Network)
-target_link_libraries(otchaenie PRIVATE Qt${QT_VERSION_MAJOR}::Core)
+target_link_libraries(media_parser PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(media_parser PRIVATE Qt${QT_VERSION_MAJOR}::Network)
+target_link_libraries(media_parser PRIVATE Qt${QT_VERSION_MAJOR}::Core)
 
-target_link_libraries(otchaenie PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(media_parser PUBLIC nlohmann_json::nlohmann_json)
 
 
-set_target_properties(otchaenie PROPERTIES
+set_target_properties(media_parser PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -76,14 +74,14 @@ set_target_properties(otchaenie PROPERTIES
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(otchaenie)
+    qt_finalize_executable(media_parser)
 endif()
 
-install(TARGETS otchaenie DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+install(TARGETS media_parser DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 install(TARGETS vk-parser RUNTIME DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/dlls)
 
-install(FILES login.txt DESTINATION .)
-install(DIRECTORY photo DESTINATION .)
+install(FILES buffer/login.txt DESTINATION .)
+install(DIRECTORY buffer DESTINATION .)
 
-install(TARGETS otchaenie DESTINATION .)
+install(TARGETS media_parser DESTINATION .)
 install(TARGETS vk-parser RUNTIME DESTINATION ./dlls)
