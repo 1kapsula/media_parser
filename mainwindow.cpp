@@ -25,10 +25,15 @@ MainWindow::MainWindow(QWidget* parent)
         }
         chooseParser = new QComboBox(this);
         chooseParser->addItem(QString::fromStdString(filename));
-        chooseParser->setGeometry(275, 135, 285, 30);
+        chooseParser->setGeometry(260, 112, 311, 30);
         QFont font;
         font.setPointSize(11);
         chooseParser->setFont(font);
+        
+        
+        count_photos = new QLabel(this);
+        
+        setCount();
     }
 #else
 
@@ -97,8 +102,26 @@ void MainWindow::deletePhotos() {
     }
 }
 
+void MainWindow::setCount() {
+    for (const auto& file : fs::directory_iterator("buffer")) {
+        if (!fs::is_directory(file)) {
+            if (fs::path(file).extension() == ".jpg")
+            {
+                I++;
+            }
+        }
+    }
+    QFont sfont;
+    sfont.setPointSize(11);
+    count_photos->setFont(sfont);
+    count_photos->setText(QString::number(I));
+    count_photos->setGeometry(325,240,33,33);
+    I = 0;
+}
+
 void MainWindow::on_DeletePhotos_clicked() {
     deletePhotos();
+    count_photos->setText("0");
 }
 
 void MainWindow::openDll(fs::path path) {
@@ -198,6 +221,7 @@ void MainWindow::on_DownloadButton_clicked()
                         sForm->show();
                         this->close();
                         full_response = {};
+                        setCount();
                     }
                     else {
                         QMessageBox::information(this, QString::fromStdString("Ошибка!"), QString::fromStdString("Логин не найден!"));

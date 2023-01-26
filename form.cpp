@@ -69,12 +69,29 @@ void Form::getTitle(json title) {
 }
 
 void Form::createGaleleryPost(std::string hash_post, std::string text_post, std::string text_repost) {
+    QFont font_separ;
+    font_separ.setPointSize(14);
+    
+    std::string start_record = "Начало публикации";
+
+    QListWidgetItem* text_separ = new QListWidgetItem(QString::fromStdString(start_record), ui->listWidget, 0);
+    
+    text_separ->setFont(font_separ);
+
+    text_separ->setBackgroundColor(Qt::green);
+
+    ui->listWidget->addItem(text_separ);
+
     std::string str_text = text_post;
+    if (text_post.empty()) {
+        str_text += "Данный пост не содержит собственного текста!";
+    }
+
     if (!text_repost.empty()) {
-        str_text += "\nТекст репоста:\n" + text_repost;
+        str_text += "\nДанный пост содержит текст репоста:\n" + text_repost;
     }
     QListWidgetItem* icon_text = new QListWidgetItem(QString::fromStdString(str_text), ui->listWidget, 0);
-    icon_text->setBackgroundColor(Qt::gray);
+
     ui->listWidget->addItem(icon_text);
     for (const auto& file : fs::directory_iterator("buffer")) {
         if (!fs::is_directory(file)) {
@@ -85,7 +102,7 @@ void Form::createGaleleryPost(std::string hash_post, std::string text_post, std:
                     ui->listWidget->setIconSize(QSize(600, 800));
                     QIcon icon(QPixmap(p.relative_path().generic_string().c_str()));
 
-                    QListWidgetItem* item = new QListWidgetItem(icon, "", ui->listWidget, 0);
+                    QListWidgetItem* item = new QListWidgetItem(icon, "", ui->listWidget, 100);
 
                     ui->listWidget->addItem(item);
 
@@ -93,4 +110,13 @@ void Form::createGaleleryPost(std::string hash_post, std::string text_post, std:
             }
         }
     }
+    std::string end_record = "Конец публикации";
+    QListWidgetItem* end_separ = new QListWidgetItem(QString::fromStdString(end_record), ui->listWidget, 0);
+    
+    end_separ->setFont(font_separ);
+
+    end_separ->setBackgroundColor(Qt::red);
+
+    ui->listWidget->addItem(end_separ);
+
 }
