@@ -22,17 +22,17 @@ MainWindow::MainWindow(QWidget* parent)
 
         if (ptr != std::string::npos) {
             filename.erase(ptr, substring.length());
+            filename.substr(0, filename.find("-") - 1);
         }
         chooseParser = new QComboBox(this);
-        chooseParser->addItem(QString::fromStdString(filename));
-        chooseParser->setGeometry(260, 112, 311, 30);
+        chooseParser->addItem(QString::fromStdString(filename.substr(0, filename.find("-"))));
+        chooseParser->setGeometry(340, 112, 231, 30);
+        chooseParser->setStyleSheet("QComboBox {""padding-left: 100px;""}");
+
         QFont font;
         font.setPointSize(11);
         chooseParser->setFont(font);
-        
-        
         count_photos = new QLabel(this);
-        
         setCount();
     }
 #else
@@ -115,7 +115,7 @@ void MainWindow::setCount() {
     sfont.setPointSize(11);
     count_photos->setFont(sfont);
     count_photos->setText(QString::number(I));
-    count_photos->setGeometry(325,240,33,33);
+    count_photos->setGeometry(326,240,33,33);
     I = 0;
 }
 
