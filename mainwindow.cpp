@@ -127,13 +127,17 @@ void MainWindow::on_DeletePhotos_clicked() {
 void MainWindow::openDll(fs::path path) {
 #ifdef _WIN32
     HINSTANCE load;
-    load = LoadLibrary(path.string().c_str());
+    std::string tmps(path.string());
+    std::wstring wide = std::wstring(tmps.begin(), tmps.end());
+    load = LoadLibraryW(wide.c_str());
     MainWindow::insertDllIntoList(load, path);
+
 #else
     void* load;
     load = dlopen(path.c_str(), RTLD_LAZY);
     insertDllIntoList(load, path);
 #endif
+
 }
 
 void MainWindow::closeDll() {

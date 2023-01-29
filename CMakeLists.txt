@@ -80,7 +80,6 @@ endif()
 install(TARGETS media_parser DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 install(TARGETS vk-parser RUNTIME DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/dlls)
 
-install(FILES buffer/login.txt DESTINATION .)
 install(DIRECTORY buffer DESTINATION .)
 
 install(TARGETS media_parser DESTINATION .)
