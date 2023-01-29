@@ -78,7 +78,7 @@ void Form::createGaleleryPost(std::string hash_post, std::string text_post, std:
     
     text_separ->setFont(font_separ);
 
-    text_separ->setBackgroundColor(Qt::green);
+    text_separ->setBackground(Qt::green);
 
     ui->listWidget->addItem(text_separ);
 
@@ -115,7 +115,7 @@ void Form::createGaleleryPost(std::string hash_post, std::string text_post, std:
     
     end_separ->setFont(font_separ);
 
-    end_separ->setBackgroundColor(Qt::red);
+    end_separ->setBackground(Qt::red);
 
     ui->listWidget->addItem(end_separ);
 
